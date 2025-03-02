@@ -1,6 +1,6 @@
 NAME = pipex
 
-SRC = main.c
+SRC = main.c cmd_fcts.c
 OBJ = $(SRC:.c=.o)
 
 CC = gcc -Wall -Wextra -Werror -g
