@@ -6,7 +6,7 @@
 /*   By: jodavis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 15:56:14 by jodavis           #+#    #+#             */
-/*   Updated: 2025/03/02 19:13:26 by jodavis        ########   odam.nl        */
+/*   Updated: 2025/03/07 18:38:54 by jodavis        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,18 +35,43 @@ int	end_dir(char *s)
 	return (i);
 }
 
+void	notfound_err(char *cmd, char **format)
+{
+	int		i;
+
+	ft_putstr_fd("command not found: ", 2);
+	ft_putstr_fd(cmd, 2);
+	write(2, "\n", 1);
+	free(cmd);
+	i = 0;
+	while (format[++i])
+		free(format[i]);
+	free(format);
+}
+
 int	execute(char *cmd, char **env)
 {
 	char	**format;
 	char	*temp;
 
 	format = ft_split(cmd, ' ');
+	if (access(format[0], X_OK) == 0)
+	{
+		execve(format[0], format, env);
+		freesplit(format, tab_len(format));
+		return (-1);
+	}
 	temp = format[0];
 	format[0] = get_cmd_path(temp, env);
-	free(temp);
-	if (execve(format[0], format, env) < 0)
+	if (!format[0])
+	{
+		notfound_err(temp, format);
 		return (-1);
-	return (0);
+	}
+	free(temp);
+	execve(format[0], format, env);
+	freesplit(format, tab_len(format));
+	return (-1);
 }
 
 char	*get_cmd_path(char *cmd, char **env)

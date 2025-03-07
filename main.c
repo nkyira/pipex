@@ -6,7 +6,7 @@
 /*   By: jodavis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 16:13:42 by jodavis           #+#    #+#             */
-/*   Updated: 2025/03/02 19:14:27 by jodavis        ########   odam.nl        */
+/*   Updated: 2025/03/07 17:02:04 by jodavis        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@ void	left_process(t_data *data)
 	int	filefd;
 
 	close(data->pipefd[0]);
-	if (access(data->infile, F_OK) < 0)
+	if (access(data->infile, F_OK) < 0 || access(data->infile, R_OK) < 0)
+	{
 		perror(data->infile);
-	else if (access(data->infile, R_OK) < 0)
-		perror(data->infile);
+		free(data);
+		exit(EXIT_FAILURE);
+	}
 	else
 	{
 		filefd = open(data->infile, O_RDONLY);
@@ -30,6 +32,7 @@ void	left_process(t_data *data)
 	dup2(data->pipefd[1], STDOUT_FILENO);
 	close(data->pipefd[1]);
 	execute(data->cmd1, data->env);
+	free(data);
 	exit(EXIT_FAILURE);
 }
 
@@ -44,6 +47,7 @@ void	right_process(t_data *data)
 	dup2(filefd, STDOUT_FILENO);
 	close(filefd);
 	execute(data->cmd2, data->env);
+	free(data);
 	exit(EXIT_FAILURE);
 }
 
