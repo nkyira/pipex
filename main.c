@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                              :+:    :+:           */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jodavis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 16:13:42 by jodavis           #+#    #+#             */
-/*   Updated: 2025/03/07 17:02:04 by jodavis        ########   odam.nl        */
+/*   Updated: 2025/03/13 13:21:55 by jodavis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <errno.h>
 
 void	left_process(t_data *data)
 {
@@ -21,7 +22,7 @@ void	left_process(t_data *data)
 	{
 		perror(data->infile);
 		free(data);
-		exit(EXIT_FAILURE);
+		exit(errno);
 	}
 	else
 	{
@@ -33,7 +34,7 @@ void	left_process(t_data *data)
 	close(data->pipefd[1]);
 	execute(data->cmd1, data->env);
 	free(data);
-	exit(EXIT_FAILURE);
+	exit(errno);
 }
 
 void	right_process(t_data *data)
@@ -48,7 +49,7 @@ void	right_process(t_data *data)
 	close(filefd);
 	execute(data->cmd2, data->env);
 	free(data);
-	exit(EXIT_FAILURE);
+	exit(errno);
 }
 
 void	setup_data(t_data *data, char **argv, char **env)
@@ -59,7 +60,7 @@ void	setup_data(t_data *data, char **argv, char **env)
 	data->outfile = argv[4];
 	data->env = env;
 	if (pipe(data->pipefd) == -1)
-		exit(EXIT_FAILURE);
+		exit(errno);
 }
 
 int	main(int argc, char **argv, char **env)
