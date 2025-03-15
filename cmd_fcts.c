@@ -12,11 +12,11 @@
 
 #include "pipex.h"
 
-int	contains_space(char *s)
+int	contains_slash(char *s)
 {
 	while (*s)
 	{
-		if (*s == ' ')
+		if (*s == '/')
 			return (1);
 		s++;
 	}
@@ -55,11 +55,16 @@ int	execute(char *cmd, char **env)
 	char	*temp;
 
 	format = ft_split(cmd, ' ');
-	if (access(format[0], X_OK) == 0)
+	if (contains_slash(format[0]))
 	{
-		execve(format[0], format, env);
-		freesplit(format, tab_len(format));
-		return (-1);
+		if (access(format[0], X_OK) == 0)
+		{
+			execve(format[0], format, env);
+			freesplit(format, tab_len(format));
+			return (-1);
+		}
+		perror(cmd);
+		exit(127);
 	}
 	temp = format[0];
 	format[0] = get_cmd_path(temp, env);
