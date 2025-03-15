@@ -18,6 +18,7 @@
 # include <stdio.h>
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <errno.h>
 
 typedef struct s_data
 {

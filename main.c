@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <errno.h>
 
 void	left_process(t_data *data)
 {
@@ -34,7 +33,7 @@ void	left_process(t_data *data)
 	close(data->pipefd[1]);
 	execute(data->cmd1, data->env);
 	free(data);
-	exit(errno);
+	exit(1);
 }
 
 void	right_process(t_data *data)
@@ -49,7 +48,7 @@ void	right_process(t_data *data)
 	close(filefd);
 	execute(data->cmd2, data->env);
 	free(data);
-	exit(errno);
+	exit(1);
 }
 
 void	setup_data(t_data *data, char **argv, char **env)
@@ -68,6 +67,8 @@ int	main(int argc, char **argv, char **env)
 	pid_t	pid1;
 	pid_t	pid2;
 	t_data	*data;
+	int		status1;
+	int		status2;
 
 	if (argc != 5)
 		return (0);
@@ -84,7 +85,7 @@ int	main(int argc, char **argv, char **env)
 	close(data->pipefd[0]);
 	close(data->pipefd[1]);
 	free(data);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
-	return (0);
+	waitpid(pid1, &status1, 0);
+	waitpid(pid2, &status2, 0);
+	return (WEXITSTATUS(status2));
 }

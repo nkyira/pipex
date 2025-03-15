@@ -66,7 +66,7 @@ int	execute(char *cmd, char **env)
 	if (!format[0])
 	{
 		notfound_err(temp, format);
-		return (-1);
+		exit(127);
 	}
 	free(temp);
 	execve(format[0], format, env);
