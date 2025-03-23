@@ -1,7 +1,10 @@
 NAME = pipex
 
-SRC = main.c cmd_fcts.c
-OBJ = $(SRC:.c=.o)
+SRC_DIR = src/
+OBJ_DIR = obj/
+
+SRC = $(wildcard $(SRC_DIR)*.c)
+OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 CC = gcc -Wall -Wextra -Werror -g
 INCLUDE = -I includes -I libft
@@ -16,15 +19,17 @@ $(NAME): $(OBJ) $(LIBFT)
 $(LIBFT) :
 	$(MAKE) -C libft
 
-%.o: %.c
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 	$(CC) $(INLCUDE) -c $< -o $@
 
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 clean:
-	rm -f $(OBJ)
+	rm -rf $(OBJ_DIR)
 	$(MAKE) -C libft fclean
 
 fclean: clean
-	rm -f $(NAME)
+	rm -rf $(NAME)
 
 re: fclean all
 

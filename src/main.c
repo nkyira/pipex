@@ -12,6 +12,9 @@
 
 #include "pipex.h"
 
+/* does stuff on the left side */
+
+
 void	left_process(t_data *data)
 {
 	int	filefd;

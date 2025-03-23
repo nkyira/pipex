@@ -12,7 +12,7 @@
 
 #ifndef PIPEX_H
 # define PIPEX_H
-# include "libft/libft.h"
+# include "../libft/libft.h"
 # include <unistd.h>
 # include <fcntl.h>
 # include <stdio.h>
@@ -31,5 +31,6 @@ typedef struct s_data
 }	t_data;
 int		execute(char *cmd, char **env);
 char	*get_cmd_path(char *cmd, char **env);
+char	**better_split(char *cmd);
 
 #endif

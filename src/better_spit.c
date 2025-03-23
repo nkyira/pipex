@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include "libft/libft.h"
+#include "pipex.h"
 
 char	*next_quote(char *cmd);
 
@@ -46,8 +45,8 @@ int	*setup_arg_format(int len, char *cmd)
 
 int *make_arg_format(char *cmd)
 {
-	int *arg_format;
-	char *start_ptr;
+	int		*arg_format;
+	char	*start_ptr;
 
 	arg_format = setup_arg_format(ft_strlen(cmd), cmd);
 	start_ptr = cmd;
@@ -124,7 +123,17 @@ int count_args(int len, int *arg_format)
 	return (args);
 }
 
-char	*fill_args(char **arg, char *cmd, char *temp_cmd,int **arg_format)
+int	do_stuff(char **arg, char **temp_arg, int len)
+{
+	*arg = malloc(len + 1);
+	if (!arg)
+		return (0);
+	*temp_arg = *arg;
+	(*arg)[len] = '\0';
+	return (1);
+}
+
+char	*fill_args(char **arg, char *cmd, char *temp_cmd, int **arg_format)
 {
 	int		len;
 	char	*temp_arg;
@@ -139,11 +148,8 @@ char	*fill_args(char **arg, char *cmd, char *temp_cmd,int **arg_format)
 	}
 	if (*temp_cmd == 39)
 		len--;
-	*arg = malloc(len + 1);
-	if (!arg)
+	if (!do_stuff(arg, &temp_arg, len))
 		return (NULL);
-	temp_arg = *arg;
-	(*arg)[len] = '\0';
 	while (len--)
 	{
 		if (*cmd != 39)
@@ -163,7 +169,6 @@ char	*fill_args(char **arg, char *cmd, char *temp_cmd,int **arg_format)
 
 char	**better_split(char *cmd)
 {
-	int		arg_count;
 	int		len;
 	int		*arg_format;
 	char	**args;
@@ -171,11 +176,9 @@ char	**better_split(char *cmd)
 
 	len = ft_strlen(cmd);
 	arg_format = make_arg_format(cmd);
-	arg_count = count_args(len, arg_format);
-	args = malloc(sizeof(char *) * (arg_count + 1));
+	args = malloc(sizeof(char *) * (count_args(len, arg_format) + 1));
 	if (!args)
 		return (NULL);
-	args[arg_count] = NULL;
 	i = 0;
 	while (*cmd)
 	{
@@ -189,20 +192,6 @@ char	**better_split(char *cmd)
 		if (*cmd)
 			arg_format++;
 	}
+	args[i] = NULL;
 	return (args);
-}
-
-int main(int argc, char **argv)
-{
-	(void)argc;
-	char	**format;
-
-	format = better_split(argv[1]);
-	int i = 0;
-	while (*format)
-	{
-		ft_printf("format[%d] = %s\n", i, *format);
-		i++;
-		format++;
-	}
 }

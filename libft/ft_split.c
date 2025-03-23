@@ -47,11 +47,12 @@ void	skip(char **ptr, char c)
 		(*ptr)++;
 }
 
-void	freesplit(char **strtab, size_t i)
+void	*freesplit(char **strtab, size_t i)
 {
 	while (i--)
 		free(strtab[i]);
 	free(strtab);
+	return (0);
 }
 
 char	**ft_split(char const *s, char c)

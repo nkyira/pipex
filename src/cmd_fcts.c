@@ -54,7 +54,7 @@ int	execute(char *cmd, char **env)
 	char	**format;
 	char	*temp;
 
-	format = ft_split(cmd, ' ');
+	format = better_split(cmd);
 	if (contains_slash(format[0]))
 	{
 		if (access(format[0], X_OK) == 0)
