@@ -6,7 +6,7 @@
 /*   By: jodavis <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/02/24 15:42:32 by jodavis        #+#    #+#                */
-/*   Updated: 2025/03/02 19:06:29 by jodavis        ########   odam.nl        */
+/*   Updated: 2025/04/04 09:47:59 by jodavis        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@ typedef struct s_data
 }	t_data;
 int		execute(char *cmd, char **env);
 char	*get_cmd_path(char *cmd, char **env);
+
+//better split functions
 char	**better_split(char *cmd);
+int		count_args(int len, int *arg_format);
+int		*make_arg_format(char *cmd);
 
 #endif

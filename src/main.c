@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main.c                                              :+:    :+:           */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jodavis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 16:13:42 by jodavis           #+#    #+#             */
-/*   Updated: 2025/03/13 13:21:55 by jodavis          ###   ########.fr       */
+/*   Updated: 2025/04/04 10:13:14 by jodavis        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-/* does stuff on the left side */
-
-
-void	left_process(t_data *data)
+static void	left_process(t_data *data)
 {
 	int	filefd;
 
@@ -39,7 +36,7 @@ void	left_process(t_data *data)
 	exit(1);
 }
 
-void	right_process(t_data *data)
+static void	right_process(t_data *data)
 {
 	int	filefd;
 
@@ -54,7 +51,7 @@ void	right_process(t_data *data)
 	exit(1);
 }
 
-void	setup_data(t_data *data, char **argv, char **env)
+static void	setup_data(t_data *data, char **argv, char **env)
 {
 	data->infile = argv[1];
 	data->cmd1 = argv[2];
