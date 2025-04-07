@@ -32,6 +32,12 @@ typedef struct s_data
 int		execute(char *cmd, char **env);
 char	*get_cmd_path(char *cmd, char **env);
 
+//main functions
+void	handle_error(t_data *data, char *str, int fd1, int fd2);
+void	left_process(t_data *data);
+void	right_process(t_data *data);
+void	setup_data(t_data *data, char **argv, char **env);
+int		handle_exit(t_data *data, pid_t pid1, pid_t pid2);
 //better split functions
 char	**better_split(char *cmd);
 int		count_args(int len, int *arg_format);

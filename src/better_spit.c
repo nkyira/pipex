@@ -50,6 +50,36 @@ static char	*fill_args(char **arg, char *cmd, char *tcmd, int **arg_format)
 	return (tcmd);
 }
 
+static char **free_and_return(char **args, int *arg_format)
+{
+	free(arg_format);
+	return (args);
+}
+
+static int better_split_loop(char **args, char *cmd, int *arg_format)
+{
+	int	i;
+	
+	i = 0;
+	while (*cmd)
+	{
+		if (*arg_format == 1 || *arg_format == 2)
+		{
+			cmd = fill_args(&args[i++], cmd, cmd, &arg_format);
+			if (!cmd)
+			{
+				freesplit(args, i - 2);
+				return (0);
+			}
+		}
+		cmd++;
+		if (*cmd)
+			arg_format++;
+	}
+	args[i] = NULL;
+	return (1);
+}
+
 //	ft_printf("arg_count = %d\n", arg_count);
 //	ft_printf("%s\n", cmd);
 //	while (++i < len)
@@ -60,29 +90,23 @@ char	**better_split(char *cmd)
 {
 	int		len;
 	int		*arg_format;
+	int		quote_count;
 	char	**args;
-	int		i;
 
-	len = ft_strlen(cmd);
+	len = -1;
+	quote_count = 0;
+	while (cmd[++len])
+		if (cmd[len] == 39)
+			quote_count++;
+	if (quote_count % 2)
+		return (NULL);
 	arg_format = make_arg_format(cmd);
 	if (!arg_format)
 		return (NULL);
 	args = malloc(sizeof(char *) * (count_args(len, arg_format) + 1));
 	if (!args)
-		return (NULL);
-	i = 0;
-	while (*cmd)
-	{
-		if (*arg_format == 1 || *arg_format == 2)
-		{
-			cmd = fill_args(&args[i++], cmd, cmd, &arg_format);
-			if (!cmd)
-				return ((char **)freesplit(args, i - 2));
-		}
-		cmd++;
-		if (*cmd)
-			arg_format++;
-	}
-	args[i] = NULL;
-	return (args);
+		return (free_and_return(args, arg_format));
+	if (!better_split_loop(args, cmd, arg_format))
+		return (free_and_return(NULL, arg_format));
+	return (free_and_return(args, arg_format));
 }

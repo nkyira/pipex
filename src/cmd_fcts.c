@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-int	contains_slash(char *s)
+static int	contains_slash(char *s)
 {
 	while (*s)
 	{
@@ -23,30 +23,31 @@ int	contains_slash(char *s)
 	return (0);
 }
 
-int	end_dir(char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] && s[i] != ':')
-	{
-		i++;
-	}
-	return (i);
-}
-
-void	notfound_err(char *cmd, char **format)
+static void	notfound_err(char *cmd, char **format)
 {
 	int		i;
 
-	ft_putstr_fd("command not found: ", 2);
 	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": command not found", 2);
 	write(2, "\n", 1);
 	free(cmd);
-	i = 0;
+	i = -1;
 	while (format[++i])
 		free(format[i]);
 	free(format);
+}
+
+static int	hard_execute(char **format, char **env, char *cmd)
+{
+	if (access(format[0], X_OK) == 0)
+	{
+		execve(format[0], format, env);
+		freesplit(format, tab_len(format));
+		return (1);
+	}
+	freesplit(format, tab_len(format));
+	perror(cmd);
+	return (127);
 }
 
 int	execute(char *cmd, char **env)
@@ -55,55 +56,19 @@ int	execute(char *cmd, char **env)
 	char	*temp;
 
 	format = better_split(cmd);
+	if (!format)
+		return (1);
 	if (contains_slash(format[0]))
-	{
-		if (access(format[0], X_OK) == 0)
-		{
-			execve(format[0], format, env);
-			freesplit(format, tab_len(format));
-			return (-1);
-		}
-		perror(cmd);
-		exit(127);
-	}
+		return (hard_execute(format, env, cmd));
 	temp = format[0];
 	format[0] = get_cmd_path(temp, env);
 	if (!format[0])
 	{
 		notfound_err(temp, format);
-		exit(127);
+		return (127);
 	}
 	free(temp);
 	execve(format[0], format, env);
 	freesplit(format, tab_len(format));
-	return (-1);
-}
-
-char	*get_cmd_path(char *cmd, char **env)
-{
-	int		i;
-	char	*dir;
-	char	*temp;
-	char	*paths;
-
-	i = -1;
-	while (env[++i])
-		if (!ft_strncmp(env[i], "PATH=", 5))
-			paths = env[i] + 5;
-	i = 0;
-	while (paths[i])
-	{
-		dir = ft_substr(paths + i, 0, end_dir(paths + i));
-		temp = ft_strjoin(dir, "/");
-		free(dir);
-		dir = ft_strjoin(temp, cmd);
-		free(temp);
-		if (access(dir, X_OK) == 0)
-			return (dir);
-		i += end_dir(paths + i);
-		free(dir);
-		if (paths[i])
-			i++;
-	}
-	return (NULL);
+	return (1);
 }

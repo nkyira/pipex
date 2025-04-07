@@ -12,11 +12,18 @@
 
 #include "pipex.h"
 
+static void	normspaghetti(int *i, int *arg_format, int *args)
+{
+	arg_format[*i] = 1;
+	(*i)++;
+	arg_format[*i] = 2;
+	(*args)++;
+}
+
 int	count_args(int len, int *arg_format)
 {
 	int	args;
 	int	i;
-	int	temp;
 
 	args = 0;
 	i = -1;
@@ -24,40 +31,15 @@ int	count_args(int len, int *arg_format)
 	{
 		if (arg_format[i] == 1)
 		{
-			i++;
-			if (arg_format[i] != 3)
-			{
-				while (arg_format[i] != 2)
-					i++;
-				args++;
-			}
-			else
-			{
-				temp = i - 1;
-				while (arg_format[i] == 3)
-					i++;
-				if (!arg_format[i])
-				{
-					args++;
-					while (arg_format[i] != 2)
-						i++;
-				}
-				else
-				{
-					arg_format[i] = 3;
-					arg_format[temp] = 3;
-				}
-			}
+			while (arg_format[i] != 2)
+				i++;
+			args++;
 		}
 		else if (arg_format[i] == 2 && i == len - 1)
 			args++;
 		else if (arg_format[i] == 2 && arg_format[i + 1] == 1)
-		{
-			arg_format[i] = 3;
-			i++;
-			arg_format[i] = 3;
-		}	
-		else if (arg_format[i] == 2 && arg_format[i + 1] != 1)
+			normspaghetti(&i, arg_format, &args);
+		else
 			args++;
 	}
 	return (args);
