@@ -12,30 +12,6 @@
 
 #include "pipex.h"
 
-static char	*next_quote(char *cmd);
-
-static char	*next_space(char *cmd)
-{
-	while (*cmd != ' ' && *cmd != 39 && *cmd)
-		cmd++;
-	if (*cmd == 39)
-		cmd = next_quote(cmd);
-	return (cmd);
-}
-
-static char	*next_quote(char *cmd)
-{
-	cmd++;
-	while (*cmd != 39)
-		cmd++;
-	cmd++;
-	if (*cmd == 39)
-		cmd = next_quote(cmd);
-	else if (*cmd != ' ')
-		cmd = next_space(cmd);
-	return (cmd);
-}
-
 static void	set_to(int *arg_format, int i, int value)
 {
 	arg_format[i] = value;
@@ -57,10 +33,24 @@ static int	*setup_arg_format(int len, char *cmd)
 	return (arg_format);
 }
 
+static void first_if(int *arg_format, char **cmd, char *start_ptr)
+{
+	set_to(arg_format, *cmd - start_ptr + 1, 1);
+	*cmd = next_quote(*cmd);
+	set_to(arg_format, *cmd - start_ptr - 1 - (*(*cmd -1) == 39), 2);
+}
+
+static void second_if(int *arg_format, char **cmd, char *start_ptr)
+{
+	set_to(arg_format, *cmd - start_ptr, 1);
+	*cmd = next_space(*cmd);
+	set_to(arg_format, *cmd - start_ptr - 1 - (*(*cmd -1) == 39), 2);
+}
+
 int	*make_arg_format(char *cmd)
 {
-	int		*arg_format;
-	char	*start_ptr;
+int		*arg_format;
+char	*start_ptr;
 
 	arg_format = setup_arg_format(ft_strlen(cmd), cmd);
 	if (!arg_format)
@@ -68,22 +58,19 @@ int	*make_arg_format(char *cmd)
 	start_ptr = cmd;
 	while (*cmd)
 	{
-		while (*cmd == ' ')
+		while (ft_isspace(*cmd))
 			cmd++;
 		if (!*cmd)
 			break ;
 		if (*cmd == 39)
-		{
-			set_to(arg_format, cmd - start_ptr + 1, 1);
-			cmd = next_quote(cmd);
-			set_to(arg_format, cmd - start_ptr - 1 - (*(cmd -1) == 39), 2);
-		}
+			first_if(arg_format, &cmd, start_ptr);
+//		{
+//			set_to(arg_format, cmd - start_ptr + 1, 1);
+//			cmd = next_quote(cmd);
+//			set_to(arg_format, cmd - start_ptr - 1 - (*(cmd -1) == 39), 2);
+//		}
 		else if (*cmd)
-		{
-			set_to(arg_format, cmd - start_ptr, 1);
-			cmd = next_space(cmd);
-			set_to(arg_format, cmd - start_ptr - 1 - (*(cmd -1) == 39), 2);
-		}
+			second_if(arg_format, &cmd, start_ptr);
 	}
 	return (arg_format);
 }

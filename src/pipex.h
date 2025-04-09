@@ -42,5 +42,8 @@ int		handle_exit(t_data *data, pid_t pid1, pid_t pid2);
 char	**better_split(char *cmd);
 int		count_args(int len, int *arg_format);
 int		*make_arg_format(char *cmd);
+int		ft_isspace(char c);
+char	*next_space(char *cmd);
+char	*next_quote(char *cmd);
 
 #endif
